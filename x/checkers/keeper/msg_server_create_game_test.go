@@ -44,19 +44,23 @@ func TestCreate1GameHasSaved(t *testing.T) {
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 2,
+		NextId:        2,
+		FifoHeadIndex: "1",
+		FifoTailIndex: "1",
 	}, systemInfo)
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "1",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     bob,
-		Red:       carol,
-		Winner:    "*",
-		Deadline:  types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
-		MoveCount: 0,
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		MoveCount:   0,
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
 
@@ -71,13 +75,15 @@ func TestCreate1GameGetAll(t *testing.T) {
 	games := keeper.GetAllStoredGame(sdk.UnwrapSDKContext(context))
 	require.Len(t, games, 1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, games[0])
 }
 
@@ -155,40 +161,48 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 4,
+		NextId:        4,
+		FifoHeadIndex: "1",
+		FifoTailIndex: "3",
 	}, systemInfo)
 	game1, found1 := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "-1",
+		AfterIndex:  "2",
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "2",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    carol,
-		Red:      alice,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "2",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       carol,
+		Red:         alice,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "1",
+		AfterIndex:  "3",
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "3",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    alice,
-		Red:      bob,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "3",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       alice,
+		Red:         bob,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "2",
+		AfterIndex:  "-1",
 	}, game3)
 }
 
@@ -213,31 +227,37 @@ func TestCreate3GamesGetAll(t *testing.T) {
 	games := keeper.GetAllStoredGame(sdk.UnwrapSDKContext(context))
 	require.Len(t, games, 3)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "-1",
+		AfterIndex:  "2",
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
-		Index:    "2",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    carol,
-		Red:      alice,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "2",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       carol,
+		Red:         alice,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "1",
+		AfterIndex:  "3",
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
-		Index:    "3",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    alice,
-		Red:      bob,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "3",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       alice,
+		Red:         bob,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "2",
+		AfterIndex:  "-1",
 	}, games[2])
 }
 
@@ -260,18 +280,22 @@ func TestCreateGameFarFuture(t *testing.T) {
 	systemInfo, found = keeper.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 1025,
+		NextId:        1025,
+		FifoHeadIndex: "1024",
+		FifoTailIndex: "1024",
 	}, systemInfo)
 	game1, found1 := keeper.GetStoredGame(ctx, "1024")
 	require.True(t, found1)
 	require.EqualValues(t, types.StoredGame{
-		Index:    "1024",
-		Board:    "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:     "b",
-		Black:    bob,
-		Red:      carol,
-		Winner:   "*",
-		Deadline: types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Index:       "1024",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		Winner:      "*",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		BeforeIndex: "-1",
+		AfterIndex:  "-1",
 	}, game1)
 }
 
