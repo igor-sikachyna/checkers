@@ -191,6 +191,20 @@ func TestPlayMoveWrongPieceAtDestination(t *testing.T) {
 	require.Equal(t, "Already piece at destination position: {0 1}: wrong move", err.Error())
 }
 
+func TestPlayMoveCalledBank(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	defer ctrl.Finish()
+	escrow.ExpectPay(context, bob, 45).Times(1)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+}
+
 func TestPlayMove2(t *testing.T) {
 	msgServer, _, context := setupMsgServerWithOneGameForPlayMove(t)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
@@ -258,6 +272,29 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		AfterIndex:  "-1",
 		Wager:       45,
 	}, game1)
+}
+
+func TestPlayMove2CalledBank(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
 }
 
 func TestPlayMove3(t *testing.T) {
@@ -343,6 +380,37 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		AfterIndex:  "-1",
 		Wager:       45,
 	}, game1)
+}
+
+func TestPlayMove3CalledBank(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     2,
+		FromY:     3,
+		ToX:       0,
+		ToY:       5,
+	})
 }
 
 func TestPlayMoveEmitted(t *testing.T) {
