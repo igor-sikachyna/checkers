@@ -6,16 +6,26 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/igor-sikachyna/checkers/testutil/keeper"
 	"github.com/igor-sikachyna/checkers/x/checkers/keeper"
 	checkers "github.com/igor-sikachyna/checkers/x/checkers/module"
+	"github.com/igor-sikachyna/checkers/x/checkers/testutil"
 	"github.com/igor-sikachyna/checkers/x/checkers/types"
 )
 
 func setupMsgServerWithOneGameForPlayMove(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
-	k, ctx := keepertest.CheckersKeeper(t)
+	server, k, context, _, escrow := setupMsgServerWithOneGameForPlayMoveWithMock(t)
+	escrow.ExpectAny(context)
+	return server, k, context
+}
+
+func setupMsgServerWithOneGameForPlayMoveWithMock(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context, *gomock.Controller, *testutil.MockBankKeeper) {
+	ctrl := gomock.NewController(t)
+	bankMock := testutil.NewMockBankKeeper(ctrl)
+	k, ctx := keepertest.CheckersKeeperWithMocks(t, bankMock)
 	checkers.InitGenesis(ctx, k, *types.DefaultGenesis())
 	server := keeper.NewMsgServerImpl(k)
 	server.CreateGame(ctx, &types.MsgCreateGame{
@@ -24,7 +34,7 @@ func setupMsgServerWithOneGameForPlayMove(t testing.TB) (types.MsgServer, keeper
 		Red:     carol,
 		Wager:   45,
 	})
-	return server, k, ctx
+	return server, k, ctx, ctrl, bankMock
 }
 
 func TestPlayMove(t *testing.T) {

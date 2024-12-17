@@ -6,18 +6,30 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
 	keepertest "github.com/igor-sikachyna/checkers/testutil/keeper"
 	"github.com/igor-sikachyna/checkers/x/checkers/keeper"
 	checkers "github.com/igor-sikachyna/checkers/x/checkers/module"
+	"github.com/igor-sikachyna/checkers/x/checkers/testutil"
 	"github.com/igor-sikachyna/checkers/x/checkers/types"
 )
 
 func setupMsgServerCreateGame(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context) {
-	k, ctx := keepertest.CheckersKeeper(t)
+	server, k, context, _, escrow := setupMsgServerCreateGameWithMock(t)
+	escrow.ExpectAny(context)
+	return server, k, context
+}
+
+func setupMsgServerCreateGameWithMock(t testing.TB) (types.MsgServer, keeper.Keeper, context.Context,
+	*gomock.Controller, *testutil.MockBankKeeper) {
+	ctrl := gomock.NewController(t)
+	bankMock := testutil.NewMockBankKeeper(ctrl)
+	k, ctx := keepertest.CheckersKeeperWithMocks(t, bankMock)
 	checkers.InitGenesis(ctx, k, *types.DefaultGenesis())
-	return keeper.NewMsgServerImpl(k), k, ctx
+	server := keeper.NewMsgServerImpl(k)
+	return server, k, ctx, ctrl, bankMock
 }
 
 func TestCreateGame(t *testing.T) {

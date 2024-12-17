@@ -106,4 +106,9 @@ govulncheck:
 	@go install golang.org/x/vuln/cmd/govulncheck@latest
 	@govulncheck ./...
 
-.PHONY: govet govulncheck
+mock-expected-keepers:
+	@mockgen -source=x/checkers/types/expected_keepers.go \
+		-package testutil \
+		-destination=x/checkers/testutil/expected_keepers_mocks.go
+
+.PHONY: govet govulncheck mock-expected-keepers

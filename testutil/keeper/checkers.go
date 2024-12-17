@@ -18,10 +18,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/igor-sikachyna/checkers/x/checkers/keeper"
+	"github.com/igor-sikachyna/checkers/x/checkers/testutil"
 	"github.com/igor-sikachyna/checkers/x/checkers/types"
 )
 
 func CheckersKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
+	return CheckersKeeperWithMocks(t, nil)
+}
+
+func CheckersKeeperWithMocks(t testing.TB, bank *testutil.MockBankKeeper) (keeper.Keeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
@@ -34,6 +39,7 @@ func CheckersKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 
 	k := keeper.NewKeeper(
+		bank,
 		cdc,
 		runtime.NewKVStoreService(storeKey),
 		log.NewNopLogger(),
