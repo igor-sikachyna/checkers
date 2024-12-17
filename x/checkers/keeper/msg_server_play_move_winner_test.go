@@ -38,6 +38,7 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		MoveCount:   40,
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Wager:       45,
 	}, game)
 	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
 	// 1 event to create a game and 40 moves in total

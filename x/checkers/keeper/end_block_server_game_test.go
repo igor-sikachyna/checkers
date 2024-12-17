@@ -122,6 +122,7 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		MoveCount:   uint64(2),
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
+		Wager:       45,
 	}, game1)
 
 	systemInfo, found := keeper.GetSystemInfo(ctx)

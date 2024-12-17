@@ -5,6 +5,7 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/igor-sikachyna/checkers/x/checkers/rules"
 )
@@ -79,4 +80,8 @@ func FormatDeadline(deadline time.Time) string {
 
 func GetNextDeadline(ctx sdk.Context) time.Time {
 	return ctx.BlockTime().Add(MaxTurnDuration)
+}
+
+func (storedGame *StoredGame) GetWagerCoin() (wager sdk.Coin) {
+	return sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(int64(storedGame.Wager)))
 }
