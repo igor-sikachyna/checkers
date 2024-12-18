@@ -493,3 +493,19 @@ func TestSavedPlayedDeadlineIsParseable(t *testing.T) {
 	_, err := game.GetDeadlineAsTime()
 	require.Nil(t, err)
 }
+
+func TestPlayMoveConsumedGas(t *testing.T) {
+	msgServer, _, context := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	before := ctx.GasMeter().GasConsumed()
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	after := ctx.GasMeter().GasConsumed()
+	require.GreaterOrEqual(t, after, before+15_000)
+}
