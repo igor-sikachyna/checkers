@@ -39,6 +39,7 @@ func TestCreateGame(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	require.Nil(t, err)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -54,6 +55,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -76,6 +78,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 
@@ -87,6 +90,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	games := keeper.GetAllStoredGame(sdk.UnwrapSDKContext(context))
 	require.Len(t, games, 1)
@@ -101,6 +105,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, games[0])
 }
 
@@ -111,6 +116,7 @@ func TestCreateGameRedAddressBad(t *testing.T) {
 		Black:   bob,
 		Red:     "notanaddress",
 		Wager:   45,
+		Denom:   "stake",
 	})
 	require.Nil(t, createResponse)
 	require.Equal(t,
@@ -125,6 +131,7 @@ func TestCreateGameEmptyRedAddress(t *testing.T) {
 		Black:   bob,
 		Red:     "",
 		Wager:   45,
+		Denom:   "stake",
 	})
 	require.Nil(t, createResponse)
 	require.Equal(t,
@@ -139,12 +146,14 @@ func TestCreate3Games(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	createResponse2, err2 := msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	require.Nil(t, err2)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -155,6 +164,7 @@ func TestCreate3Games(t *testing.T) {
 		Black:   alice,
 		Red:     bob,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	require.Nil(t, err3)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -170,18 +180,21 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
 		Wager:   45,
+		Denom:   "coin",
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
 		Wager:   45,
+		Denom:   "gold",
 	})
 	systemInfo, found := keeper.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -203,6 +216,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "2",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 	game2, found2 := keeper.GetStoredGame(ctx, "2")
 	require.True(t, found2)
@@ -217,6 +231,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		BeforeIndex: "1",
 		AfterIndex:  "3",
 		Wager:       45,
+		Denom:       "coin",
 	}, game2)
 	game3, found3 := keeper.GetStoredGame(ctx, "3")
 	require.True(t, found3)
@@ -231,6 +246,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		BeforeIndex: "2",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "gold",
 	}, game3)
 }
 
@@ -242,18 +258,21 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
 		Wager:   45,
+		Denom:   "coin",
 	})
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
 		Wager:   45,
+		Denom:   "gold",
 	})
 	games := keeper.GetAllStoredGame(sdk.UnwrapSDKContext(context))
 	require.Len(t, games, 3)
@@ -268,6 +287,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "2",
 		Wager:       45,
+		Denom:       "stake",
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
 		Index:       "2",
@@ -280,6 +300,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		BeforeIndex: "1",
 		AfterIndex:  "3",
 		Wager:       45,
+		Denom:       "coin",
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
 		Index:       "3",
@@ -292,6 +313,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		BeforeIndex: "2",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "gold",
 	}, games[2])
 }
 
@@ -307,6 +329,7 @@ func TestCreateGameFarFuture(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	require.Nil(t, err)
 	require.EqualValues(t, types.MsgCreateGameResponse{
@@ -332,6 +355,7 @@ func TestCreateGameFarFuture(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 
@@ -342,6 +366,7 @@ func TestCreate1GameEmitted(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	ctx := sdk.UnwrapSDKContext(context)
 	require.NotNil(t, ctx)
@@ -356,6 +381,7 @@ func TestCreate1GameEmitted(t *testing.T) {
 			{Key: "black", Value: bob},
 			{Key: "red", Value: carol},
 			{Key: "wager", Value: "45"},
+			{Key: "denom", Value: "stake"},
 		},
 	}, event)
 }
@@ -368,6 +394,7 @@ func TestSavedCreatedDeadlineIsParseable(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	game, found := keeper.GetStoredGame(ctx, "1")
 	require.True(t, found)
@@ -384,6 +411,7 @@ func TestCreate1GameConsumedGas(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	after := ctx.GasMeter().GasConsumed()
 	require.GreaterOrEqual(t, after, before+25_000)

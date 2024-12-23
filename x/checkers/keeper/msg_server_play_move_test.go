@@ -33,6 +33,7 @@ func setupMsgServerWithOneGameForPlayMoveWithMock(t testing.TB) (types.MsgServer
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	return server, k, ctx, ctrl, bankMock
 }
@@ -76,6 +77,7 @@ func TestPlayMoveSameBlackRed(t *testing.T) {
 		Black:   bob,
 		Red:     bob,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
@@ -125,6 +127,7 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 
@@ -271,6 +274,7 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 
@@ -379,6 +383,7 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 }
 

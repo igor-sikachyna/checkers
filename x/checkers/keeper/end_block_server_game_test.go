@@ -123,6 +123,7 @@ func TestForfeitPlayedTwice(t *testing.T) {
 		BeforeIndex: "-1",
 		AfterIndex:  "-1",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 
 	systemInfo, found := keeper.GetSystemInfo(ctx)
