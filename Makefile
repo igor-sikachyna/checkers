@@ -111,4 +111,13 @@ mock-expected-keepers:
 		-package testutil \
 		-destination=x/checkers/testutil/expected_keepers_mocks.go
 
-.PHONY: govet govulncheck mock-expected-keepers
+gen-protoc-ts:
+	@mkdir -p ./client/src/types/generated/
+	@find proto/checkers/checkers -type f -printf '%p\n' | xargs -I {} protoc \
+		--plugin="./scripts/node_modules/.bin/protoc-gen-ts_proto" \
+		--ts_proto_out="./client/src/types/generated" \
+		--proto_path="./proto" \
+		--ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=messages" \
+		{}
+
+.PHONY: govet govulncheck mock-expected-keepers gen-protoc-ts
