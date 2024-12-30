@@ -1,5 +1,4 @@
 import { DeliverTxResponse } from "@cosmjs/stargate"
-import { Log } from "@cosmjs/stargate/build/logs"
 import Long from "long"
 import { CheckersSigningStargateClient } from "src/checkers_signingstargateclient"
 import { CheckersStargateClient } from "src/checkers_stargateclient"
@@ -7,7 +6,7 @@ import { IGameInfo } from "src/sharedTypes"
 import { QueryCanPlayMoveResponse } from "../generated/checkers/query"
 import { StoredGame } from "../generated/checkers/stored_game"
 import { guiPositionToPos, storedToGameInfo } from "./board"
-import { getCapturedPos, getCreatedGameId, getCreateGameEvent, getMovePlayedEvent } from "./events"
+import { getCapturedPos, getCreatedGameId, getCreateGameEvent, getMovePlayedEvents } from "./events"
 import { MsgPlayMoveEncodeObject, typeUrlMsgPlayMove } from "./messages"
 import { Pos } from "./player"
 
@@ -67,8 +66,7 @@ CheckersSigningStargateClient.prototype.createGuiGame = async function (
     red: string,
 ): Promise<string> {
     const result: DeliverTxResponse = await this.createGame(creator, black, red, "stake", Long.ZERO, "auto")
-    const logs: Log[] = JSON.parse(result.rawLog!)
-    return getCreatedGameId(getCreateGameEvent(logs[0])!)
+    return getCreatedGameId(getCreateGameEvent(result)!)
 }
 
 CheckersSigningStargateClient.prototype.playGuiMoves = async function (
@@ -94,6 +92,5 @@ CheckersSigningStargateClient.prototype.playGuiMoves = async function (
             }
         })
     const result: DeliverTxResponse = await this.signAndBroadcast(creator, playMoveMsgList, "auto")
-    const logs: Log[] = JSON.parse(result.rawLog!)
-    return logs.map((log: Log) => getCapturedPos(getMovePlayedEvent(log)!))
+    return getMovePlayedEvents(result).map((e) => getCapturedPos(e));
 }
