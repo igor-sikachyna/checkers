@@ -170,4 +170,7 @@ docker-init:
 docker-genesis:
 	scripts/docker-genesis.sh
 
-.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis
+docker-keys:
+	scripts/docker-keys.sh
+
+.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis docker-keys
