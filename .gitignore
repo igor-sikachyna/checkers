@@ -8,3 +8,4 @@ release/
 *.log
 *.ign
 scripts/node_modules
+build
