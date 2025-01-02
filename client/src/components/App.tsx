@@ -1,10 +1,9 @@
 import React, { CSSProperties } from "react"
-import Loadable from "react-loadable"
+import Loadable from '@loadable/component'
 import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom"
 import { Container } from "reactstrap"
 import Footer from "./Footer"
 import GameContainer from "./Game/GameContainer"
-import Loading from "./Loading"
 import MenuContainer from "./Menu/MenuContainer"
 
 const styles: CSSProperties = {
@@ -26,14 +25,8 @@ const GameContainerWrapper = ({ rpcUrl }: GameContainerWrapperProps) => (
     <GameContainer index={useParams().index!} location={useLocation()} rpcUrl={rpcUrl} />
 )
 
-const AsyncGameContainer = Loadable({
-    loader: () => Promise.resolve(GameContainerWrapper),
-    loading: Loading,
-})
-const AsyncHowToPlay = Loadable({
-    loader: () => import("./HowToPlay/HowToPlay"),
-    loading: Loading,
-})
+const AsyncGameContainer = Loadable(() => Promise.resolve(GameContainerWrapper))
+const AsyncHowToPlay = Loadable(() => import("./HowToPlay/HowToPlay"))
 
 export interface AppProps {
     rpcUrl: string
