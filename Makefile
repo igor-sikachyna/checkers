@@ -122,9 +122,9 @@ gen-protoc-ts:
 
 .PHONY: govet govulncheck mock-expected-keepers gen-protoc-ts
 
-###################
-###    Build    ###
-###################
+###############
+###  Build  ###
+###############
 
 build-linux:
 	GOOS=linux GOARCH=amd64 go build -o ./build/checkersd-linux-amd64 ./cmd/checkersd/main.go
@@ -153,3 +153,12 @@ build-darwin-with-checksum: build-darwin do-checksum-darwin
 build-with-checksum: build-linux-with-checksum build-darwin-with-checksum
 
 .PHONY: build-linux do-checksum-linux build-linux-with-checksum build-darwin build-all do-checksum-darwin build-darwin-with-checksum build-with-checksum
+
+################
+###  Docker  ###
+################
+
+docker-build:
+	docker build -f prod-sim/Dockerfile-checkersd-debian . -t checkersd_i
+
+.PHONY: docker-build
