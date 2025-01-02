@@ -158,7 +158,10 @@ build-with-checksum: build-linux-with-checksum build-darwin-with-checksum
 ###  Docker  ###
 ################
 
-docker-build:
+docker-build-checkers:
 	docker build -f prod-sim/Dockerfile-checkersd-debian . -t checkersd_i
 
-.PHONY: docker-build
+docker-build-kms:
+	docker build -f prod-sim/Dockerfile-tmkms-debian . -t tmkms_i
+
+.PHONY: docker-build-checkers docker-build-kms
