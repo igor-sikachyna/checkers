@@ -9,3 +9,4 @@ release/
 *.ign
 scripts/node_modules
 build
+prod-sim
