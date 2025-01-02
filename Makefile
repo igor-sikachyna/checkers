@@ -164,4 +164,12 @@ docker-build-checkers:
 docker-build-kms:
 	docker build -f prod-sim/Dockerfile-tmkms-debian . -t tmkms_i
 
+docker-init:
+	echo -e desk-alice'\n'desk-bob'\n'node-carol'\n'sentry-alice'\n'sentry-bob'\n'val-alice'\n'val-bob \
+		| xargs -I {} \
+		docker run --rm -i \
+		-v $(pwd)/prod-sim/{}:/root/.checkers \
+		checkersd_i \
+		init checkers
+
 .PHONY: docker-build-checkers docker-build-kms
