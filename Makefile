@@ -182,6 +182,9 @@ docker-balances:
 docker-stake:
 	scripts/docker-stake.sh
 
-docker-run-all: docker-init docker-genesis docker-keys docker-kms docker-balances docker-stake
+docker-genesis-assemble:
+	scripts/docker-genesis-assemble.sh
 
-.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis docker-keys docker-balances docker-stake docker-run-all
+docker-run-all: docker-init docker-genesis docker-keys docker-kms docker-balances docker-stake docker-genesis-assemble
+
+.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-run-all
