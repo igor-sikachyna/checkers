@@ -164,6 +164,9 @@ docker-build-checkers:
 docker-build-kms:
 	docker build -f prod-sim/Dockerfile-tmkms-debian . -t tmkms_i
 
+docker-clean:
+	sudo git clean -f -d -X prod-sim
+
 docker-init:
 	scripts/docker-init.sh
 
@@ -185,6 +188,9 @@ docker-stake:
 docker-genesis-assemble:
 	scripts/docker-genesis-assemble.sh
 
-docker-run-all: docker-init docker-genesis docker-keys docker-kms docker-balances docker-stake docker-genesis-assemble
+docker-network:
+	scripts/docker-network.sh
 
-.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-run-all
+docker-run-all: docker-clean docker-init docker-genesis docker-keys docker-kms docker-balances docker-stake docker-genesis-assemble docker-network
+
+.PHONY: docker-build-checkers docker-build-kms docker-clean docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-network docker-run-all
