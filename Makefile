@@ -176,4 +176,7 @@ docker-keys:
 docker-kms:
 	scripts/docker-kms.sh
 
-.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis docker-keys
+docker-balances:
+	scripts/docker-balances.sh
+
+.PHONY: docker-build-checkers docker-build-kms docker-init docker-genesis docker-keys docker-balances
