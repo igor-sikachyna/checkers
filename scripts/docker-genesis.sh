@@ -20,3 +20,10 @@ echo -e desk-alice'\n'desk-bob'\n'node-carol'\n'sentry-alice'\n'sentry-bob'\n'va
     checkersd_i \
     -Ei 's/^chain-id = .*$/chain-id = "checkers-1"/g' \
     /root/.checkers/config/client.toml
+
+docker run --rm -i \
+    -v $(pwd)/prod-sim/desk-alice:/root/.checkers \
+    --entrypoint sed \
+    checkersd_i \
+    -Ei 's/"chain_id": "checkers"/"chain_id": "checkers-1"/g' \
+    /root/.checkers/config/genesis.json
