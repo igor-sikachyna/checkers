@@ -17,7 +17,7 @@ docker run --rm -it \
 sudo mv prod-sim/desk-alice/config/genesis.json \
     prod-sim/desk-bob/config/
 
-BOB=$(echo password | docker run --rm -i \
+BOB=$(echo $(sudo cat prod-sim/desk-bob/keys/passphrase.txt) | docker run --rm -i \
     -v $(pwd)/prod-sim/desk-bob:/root/.checkers \
     checkersd_i \
     keys \
