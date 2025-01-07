@@ -84,3 +84,38 @@ docker run --rm -i \
     checkersd_i \
     -Ei 's/seeds = ""/seeds = "'$ALICE_SENTRY_KEY'@sentry-alice:26656,'$BOB_SENTRY_KEY'@sentry-bob:26656"/g' \
     /root/.checkers/config/config.toml
+
+docker run --rm -i \
+    -v $(pwd)/prod-sim/node-carol:/root/.checkers \
+    --entrypoint sed \
+    checkersd_i \
+    -Ei '0,/^laddr = .*$/{s/^laddr = .*$/laddr = "tcp:\/\/0.0.0.0:26657"/}' \
+    /root/.checkers/config/config.toml
+
+echo -e node-carol'\n'sentry-alice'\n'sentry-bob'\n'val-alice'\n'val-bob \
+    | xargs -I {} \
+    docker run --rm -i \
+    -v $(pwd)/prod-sim/{}:/root/.checkers \
+    --entrypoint sed \
+    checkersd_i \
+    -Ei 's/^cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' \
+    /root/.checkers/config/config.toml
+
+echo -e node-carol'\n'sentry-alice'\n'sentry-bob'\n'val-alice'\n'val-bob \
+    | xargs -I {} \
+    docker run --rm -i \
+    -v $(pwd)/prod-sim/{}:/root/.checkers \
+    --entrypoint sed \
+    checkersd_i \
+    -Ei 's/^enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' \
+    /root/.checkers/config/app.toml
+
+# Does not do anything
+echo -e node-carol'\n'sentry-alice'\n'sentry-bob'\n'val-alice'\n'val-bob \
+    | xargs -I {} \
+    docker run --rm -i \
+    -v $(pwd)/prod-sim/{}:/root/.checkers \
+    --entrypoint sed \
+    checkersd_i \
+    -Ei 's/^enable-unsafe-cors = false/enable-unsafe-cors = true/g' \
+    /root/.checkers/config/app.toml
