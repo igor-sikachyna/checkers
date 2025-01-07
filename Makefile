@@ -193,4 +193,13 @@ docker-network:
 
 docker-run-all: docker-clean docker-init docker-genesis docker-keys docker-kms docker-balances docker-stake docker-genesis-assemble docker-network
 
-.PHONY: docker-build-checkers docker-build-kms docker-clean docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-network docker-run-all
+docker-compose-up:
+	docker compose \
+		--file prod-sim/docker-compose.yml \
+		--project-name checkers-prod up \
+		--detach
+
+docker-compose-down:
+	docker compose --project-name checkers-prod down
+
+.PHONY: docker-build-checkers docker-build-kms docker-clean docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-network docker-run-all docker-compose-up docker-compose-down
