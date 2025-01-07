@@ -9,4 +9,5 @@ release/
 *.ign
 scripts/node_modules
 build
-prod-sim
+prod-sim/*
+!prod-sim/docker-compose.yml
