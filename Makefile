@@ -154,15 +154,24 @@ build-with-checksum: build-linux-with-checksum build-darwin-with-checksum
 
 .PHONY: build-linux do-checksum-linux build-linux-with-checksum build-darwin build-all do-checksum-darwin build-darwin-with-checksum build-with-checksum
 
-################
-###  Docker  ###
-################
+######################
+###  Docker build  ###
+######################
 
 docker-build-checkers:
 	docker build -f prod-sim/Dockerfile-checkersd-debian . -t checkersd_i
 
 docker-build-kms:
 	docker build -f prod-sim/Dockerfile-tmkms-debian . -t tmkms_i
+
+docker-build-standalone:
+	docker build -f ./docker/Dockerfile-checkersd-alpine . -t checkersd_standalone
+
+.PHONY: docker-build-checkers docker-build-kms docker-build-standalone
+
+###############################
+###  Docker production sim  ###
+###############################
 
 docker-clean:
 	sudo git clean -f -d -X prod-sim
@@ -202,4 +211,4 @@ docker-compose-up:
 docker-compose-down:
 	docker compose --project-name checkers-prod down
 
-.PHONY: docker-build-checkers docker-build-kms docker-clean docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-network docker-run-all docker-compose-up docker-compose-down
+.PHONY: docker-clean docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-network docker-run-all docker-compose-up docker-compose-down
