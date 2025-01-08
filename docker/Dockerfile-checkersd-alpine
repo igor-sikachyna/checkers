@@ -1,3 +1,27 @@
+# Faucet
+
+FROM --platform=linux node:20.18-alpine AS cosmos-faucet
+
+ENV COSMJS_VERSION=0.32.4
+
+RUN npm install @cosmjs/faucet@${COSMJS_VERSION} --global --production
+
+ENV FAUCET_CONCURRENCY=2
+ENV FAUCET_PORT=4500
+ENV FAUCET_GAS_PRICE=0.001stake
+ENV FAUCET_MNEMONIC="attract digital bundle display fluid token damage cash speed sand symptom fluid excuse welcome note faith kidney before tide mention foot brain under annual"
+ENV FAUCET_ADDRESS_PREFIX=cosmos
+ENV FAUCET_TOKENS="stake, token"
+ENV FAUCET_CREDIT_AMOUNT_STAKE=100
+ENV FAUCET_CREDIT_AMOUNT_TOKEN=100
+ENV FAUCET_COOLDOWN_TIME=0
+
+EXPOSE 4500
+
+ENTRYPOINT [ "cosmos-faucet" ]
+
+# Build checkersd
+
 FROM --platform=linux golang:1.23.3-alpine AS builder
 
 ENV CHECKERS_VERSION=ignitecli
@@ -9,6 +33,8 @@ RUN git clone --depth 1 --branch ${CHECKERS_VERSION} https://github.com/igor-sik
 
 WORKDIR /root/checkers
 RUN go build -o ./build/checkersd ./cmd/checkersd/main.go
+
+# checkersd chain
 
 FROM --platform=linux alpine
 
@@ -34,6 +60,7 @@ RUN echo password | checkersd keys import alice /root/.checkers/keys/encrypted-p
 RUN checkersd init checkers
 RUN sed -Ei 's/^enable-unsafe-cors = false/enable-unsafe-cors = true/g' /root/.checkers/config/app.toml
 RUN sed -Ei 's/^enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' /root/.checkers/config/app.toml
+RUN sed -Ei 's/^minimum-gas-prices = ""/minimum-gas-prices = "0.1stake"/g' /root/.checkers/config/app.toml
 RUN sed -Ei 's/^laddr = "tcp:\/\/127.0.0.1:26657"/laddr = "tcp:\/\/0.0.0.0:26657"/g' /root/.checkers/config/config.toml
 RUN sed -Ei 's/^cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' /root/.checkers/config/config.toml
 RUN sed -Ei 's/^chain-id = .*$/chain-id = "checkers-1"/g' /root/.checkers/config/client.toml
