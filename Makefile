@@ -166,6 +166,7 @@ docker-build-kms:
 
 docker-build-standalone:
 	docker build -f ./docker/Dockerfile-checkersd-alpine . -t checkersd_standalone
+	docker build -f ./docker/Dockerfile-checkersd-alpine . --target cosmos-faucet -t cosmos-faucet_i:0.32.4
 
 .PHONY: docker-build-checkers docker-build-kms docker-build-standalone
 
@@ -212,3 +213,30 @@ docker-compose-down:
 	docker compose --project-name checkers-prod down
 
 .PHONY: docker-clean docker-init docker-genesis docker-keys docker-balances docker-stake docker-genesis-assemble docker-network docker-run-all docker-compose-up docker-compose-down
+
+###########################
+###  Docker standalone  ###
+###########################
+
+docker-run-standalone:
+	-docker network create checkers-net
+	docker run --rm -it \
+		-p 26657:26657 \
+		--name checkers \
+		--network checkers-net \
+		--detach \
+		checkersd_standalone start
+	sleep 10
+	docker run --rm -it \
+		-p 4500:4500 \
+		--name cosmos-faucet \
+		--network checkers-net \
+		--detach \
+		cosmos-faucet_i:0.32.4 start http://checkers:26657
+
+docker-stop-standalone:
+	-docker stop cosmos-faucet
+	-docker stop checkers
+	-docker network rm checkers-net
+
+.PHONY: docker-run-standalone docker-stop-standalone
