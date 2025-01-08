@@ -1,0 +1,50 @@
+FROM --platform=linux golang:1.23.3-alpine AS builder
+
+ENV CHECKERS_VERSION=ignitecli
+
+RUN apk add --update --no-cache make git
+
+WORKDIR /root
+RUN git clone --depth 1 --branch ${CHECKERS_VERSION} https://github.com/igor-sikachyna/checkers checkers
+
+WORKDIR /root/checkers
+RUN go build -o ./build/checkersd ./cmd/checkersd/main.go
+
+FROM --platform=linux alpine
+
+COPY --from=builder /root/checkers/build/checkersd /usr/local/bin/checkersd
+
+ENV ALICE=cosmos1tummt3pddsjp02a4sfkapuqwvkemmlvddrn0fe
+
+RUN mkdir -p /root/.checkers/keys
+
+# This private key file corresponds to the mnemonic above
+RUN echo -----BEGIN TENDERMINT PRIVATE KEY----- > /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo kdf: argon2 >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo salt: E6514D2238AB52F20BDBD2AA8479D736 >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo type: secp256k1 >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo  >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo cWcyubTxPtfec2fzBljEBY+DRBqgxtcjUI+1wB0Gfl0KgyrawR8w7Pf+9srTf7Ox >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo JkvKqX8= >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo =vhkK >> /root/.checkers/keys/encrypted-private-key-alice.txt
+RUN echo -----END TENDERMINT PRIVATE KEY----- >> /root/.checkers/keys/encrypted-private-key-alice.txt
+
+RUN echo password | checkersd keys import alice /root/.checkers/keys/encrypted-private-key-alice.txt --keyring-backend test
+
+RUN checkersd init checkers
+RUN sed -Ei 's/^enable-unsafe-cors = false/enable-unsafe-cors = true/g' /root/.checkers/config/app.toml
+RUN sed -Ei 's/^enabled-unsafe-cors = false/enabled-unsafe-cors = true/g' /root/.checkers/config/app.toml
+RUN sed -Ei 's/^laddr = "tcp:\/\/127.0.0.1:26657"/laddr = "tcp:\/\/0.0.0.0:26657"/g' /root/.checkers/config/config.toml
+RUN sed -Ei 's/^cors_allowed_origins = \[\]/cors_allowed_origins = \["\*"\]/g' /root/.checkers/config/config.toml
+RUN sed -Ei 's/^chain-id = .*$/chain-id = "checkers-1"/g' /root/.checkers/config/client.toml
+
+RUN sed -Ei 's/"chain_id": "checkers"/"chain_id": "checkers-1"/g' /root/.checkers/config/genesis.json
+RUN checkersd genesis add-genesis-account $ALICE 1000000000000000stake,1000000000000000token
+RUN checkersd genesis gentx alice 10000000stake --keyring-backend test \
+    --account-number 0 --sequence 0 --chain-id checkers-1 \
+    --gas 1000000 --gas-prices 0.1stake
+RUN checkersd genesis collect-gentxs
+
+EXPOSE 26657
+
+ENTRYPOINT [ "checkersd" ]
