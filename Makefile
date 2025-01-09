@@ -43,7 +43,10 @@ bench:
 
 test: govet govulncheck test-unit
 
-.PHONY: test test-unit test-race test-cover bench
+test-keeper:
+	go test github.com/igor-sikachyna/checkers/x/checkers/keeper
+
+.PHONY: test test-unit test-race test-cover bench test-keeper
 
 #################
 ###  Install  ###
