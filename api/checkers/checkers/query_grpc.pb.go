@@ -8,6 +8,7 @@ package checkers
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -24,6 +25,8 @@ const (
 	Query_StoredGame_FullMethodName    = "/checkers.checkers.Query/StoredGame"
 	Query_StoredGameAll_FullMethodName = "/checkers.checkers.Query/StoredGameAll"
 	Query_CanPlayMove_FullMethodName   = "/checkers.checkers.Query/CanPlayMove"
+	Query_PlayerInfo_FullMethodName    = "/checkers.checkers.Query/PlayerInfo"
+	Query_PlayerInfoAll_FullMethodName = "/checkers.checkers.Query/PlayerInfoAll"
 )
 
 // QueryClient is the client API for Query service.
@@ -39,6 +42,9 @@ type QueryClient interface {
 	StoredGameAll(ctx context.Context, in *QueryAllStoredGameRequest, opts ...grpc.CallOption) (*QueryAllStoredGameResponse, error)
 	// Queries a list of CanPlayMove items.
 	CanPlayMove(ctx context.Context, in *QueryCanPlayMoveRequest, opts ...grpc.CallOption) (*QueryCanPlayMoveResponse, error)
+	// Queries a list of PlayerInfo items.
+	PlayerInfo(ctx context.Context, in *QueryGetPlayerInfoRequest, opts ...grpc.CallOption) (*QueryGetPlayerInfoResponse, error)
+	PlayerInfoAll(ctx context.Context, in *QueryAllPlayerInfoRequest, opts ...grpc.CallOption) (*QueryAllPlayerInfoResponse, error)
 }
 
 type queryClient struct {
@@ -94,6 +100,24 @@ func (c *queryClient) CanPlayMove(ctx context.Context, in *QueryCanPlayMoveReque
 	return out, nil
 }
 
+func (c *queryClient) PlayerInfo(ctx context.Context, in *QueryGetPlayerInfoRequest, opts ...grpc.CallOption) (*QueryGetPlayerInfoResponse, error) {
+	out := new(QueryGetPlayerInfoResponse)
+	err := c.cc.Invoke(ctx, Query_PlayerInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) PlayerInfoAll(ctx context.Context, in *QueryAllPlayerInfoRequest, opts ...grpc.CallOption) (*QueryAllPlayerInfoResponse, error) {
+	out := new(QueryAllPlayerInfoResponse)
+	err := c.cc.Invoke(ctx, Query_PlayerInfoAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -107,6 +131,9 @@ type QueryServer interface {
 	StoredGameAll(context.Context, *QueryAllStoredGameRequest) (*QueryAllStoredGameResponse, error)
 	// Queries a list of CanPlayMove items.
 	CanPlayMove(context.Context, *QueryCanPlayMoveRequest) (*QueryCanPlayMoveResponse, error)
+	// Queries a list of PlayerInfo items.
+	PlayerInfo(context.Context, *QueryGetPlayerInfoRequest) (*QueryGetPlayerInfoResponse, error)
+	PlayerInfoAll(context.Context, *QueryAllPlayerInfoRequest) (*QueryAllPlayerInfoResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -128,6 +155,12 @@ func (UnimplementedQueryServer) StoredGameAll(context.Context, *QueryAllStoredGa
 }
 func (UnimplementedQueryServer) CanPlayMove(context.Context, *QueryCanPlayMoveRequest) (*QueryCanPlayMoveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CanPlayMove not implemented")
+}
+func (UnimplementedQueryServer) PlayerInfo(context.Context, *QueryGetPlayerInfoRequest) (*QueryGetPlayerInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerInfo not implemented")
+}
+func (UnimplementedQueryServer) PlayerInfoAll(context.Context, *QueryAllPlayerInfoRequest) (*QueryAllPlayerInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerInfoAll not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -232,6 +265,42 @@ func _Query_CanPlayMove_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_PlayerInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetPlayerInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlayerInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerInfo(ctx, req.(*QueryGetPlayerInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_PlayerInfoAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllPlayerInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerInfoAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlayerInfoAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerInfoAll(ctx, req.(*QueryAllPlayerInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -258,6 +327,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CanPlayMove",
 			Handler:    _Query_CanPlayMove_Handler,
+		},
+		{
+			MethodName: "PlayerInfo",
+			Handler:    _Query_PlayerInfo_Handler,
+		},
+		{
+			MethodName: "PlayerInfoAll",
+			Handler:    _Query_PlayerInfoAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

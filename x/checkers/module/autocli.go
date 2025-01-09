@@ -40,6 +40,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "gameIndex"}, {ProtoField: "player"}, {ProtoField: "fromX"}, {ProtoField: "fromY"}, {ProtoField: "toX"}, {ProtoField: "toY"}},
 				},
 
+				{
+					RpcMethod: "PlayerInfoAll",
+					Use:       "list-player-info",
+					Short:     "List all playerInfo",
+				},
+				{
+					RpcMethod:      "PlayerInfo",
+					Use:            "show-player-info [id]",
+					Short:          "Shows a playerInfo",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "index"}},
+				},
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
