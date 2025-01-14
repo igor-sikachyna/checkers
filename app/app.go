@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+	"fmt"
 	"io"
 
 	_ "cosmossdk.io/api/cosmos/tx/config/v1" // import for side-effects
@@ -75,10 +77,12 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"github.com/igor-sikachyna/checkers/app/upgrades/v1tov1_1"
+	"github.com/igor-sikachyna/checkers/docs"
+
 	checkersmodulekeeper "github.com/igor-sikachyna/checkers/x/checkers/keeper"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-
-	"github.com/igor-sikachyna/checkers/docs"
 )
 
 const (
@@ -145,7 +149,8 @@ type App struct {
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// simulation manager
-	sm *module.SimulationManager
+	sm           *module.SimulationManager
+	configurator module.Configurator
 }
 
 func init() {
@@ -290,6 +295,9 @@ func New(
 		return app.App.InitChainer(ctx, req)
 	})
 
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	app.setupUpgradeHandlers()
+
 	if err := app.Load(loadLatest); err != nil {
 		return nil, err
 	}
@@ -417,4 +425,37 @@ func BlockedAddresses() map[string]bool {
 		}
 	}
 	return result
+}
+
+func (app *App) setupUpgradeHandlers() {
+	// v1 to v1.1 upgrade handler
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v1tov1_1.UpgradeName,
+		func(ctx context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+			return app.ModuleManager.RunMigrations(ctx, app.configurator, vm)
+		},
+	)
+
+	// When a planned update height is reached, the old binary will panic
+	// writing on disk the height and name of the update that triggered it
+	// This will read that value, and execute the preparations for the upgrade.
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Errorf("failed to read upgrade info from disk: %w", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	switch upgradeInfo.Name {
+	case v1tov1_1.UpgradeName:
+	}
+
+	if storeUpgrades != nil {
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
+	}
 }
