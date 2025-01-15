@@ -9,7 +9,10 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 var (
-	KeyLength            = []byte("Length")
+	KeyLength = []byte("Length")
+)
+
+const (
 	DefaultLength uint64 = 100
 )
 
