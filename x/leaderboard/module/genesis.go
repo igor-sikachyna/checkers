@@ -22,10 +22,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	// Get all leaderboard
-	leaderboard, found := k.GetLeaderboard(ctx)
-	if found {
-		genesis.Leaderboard = leaderboard
-	}
+	genesis.Leaderboard = k.GetLeaderboard(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
