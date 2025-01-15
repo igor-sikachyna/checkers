@@ -17,6 +17,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Use:       "params",
 					Short:     "Shows the parameters of the module",
 				},
+				{
+					RpcMethod: "Leaderboard",
+					Use:       "show-leaderboard",
+					Short:     "show leaderboard",
+				},
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},

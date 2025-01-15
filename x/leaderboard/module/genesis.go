@@ -9,6 +9,10 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+	// Set if defined
+	if genState.Leaderboard != nil {
+		k.SetLeaderboard(ctx, *genState.Leaderboard)
+	}
 	// this line is used by starport scaffolding # genesis/module/init
 	if err := k.SetParams(ctx, genState.Params); err != nil {
 		panic(err)
@@ -20,6 +24,11 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis := types.DefaultGenesis()
 	genesis.Params = k.GetParams(ctx)
 
+	// Get all leaderboard
+	leaderboard, found := k.GetLeaderboard(ctx)
+	if found {
+		genesis.Leaderboard = &leaderboard
+	}
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
