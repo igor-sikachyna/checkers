@@ -22,12 +22,28 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
-				Leaderboard: &types.Leaderboard{
-					Winners: "98",
+				Leaderboard: types.Leaderboard{
+					Winners: []types.Winner{},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated winnerPlayer",
+			genState: &types.GenesisState{
+				Leaderboard: types.Leaderboard{
+					Winners: []types.Winner{
+						{
+							Address: "cosmos123",
+						},
+						{
+							Address: "cosmos123",
+						},
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	}
@@ -41,4 +57,17 @@ func TestGenesisState_Validate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDefaultGenesisState_ExpectedInitial(t *testing.T) {
+	require.EqualValues(t,
+		&types.GenesisState{
+			Leaderboard: types.Leaderboard{
+				Winners: []types.Winner{},
+			},
+			Params: types.Params{
+				Length: 100,
+			},
+		},
+		types.DefaultGenesis())
 }

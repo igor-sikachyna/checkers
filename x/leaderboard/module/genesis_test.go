@@ -14,8 +14,15 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 
-		Leaderboard: &types.Leaderboard{
-			Winners: "86",
+		Leaderboard: types.Leaderboard{
+			Winners: []types.Winner{
+				{
+					Address: "cosmos123",
+				},
+				{
+					Address: "cosmos456",
+				},
+			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}

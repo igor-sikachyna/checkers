@@ -17,17 +17,17 @@ func (k Keeper) SetLeaderboard(ctx context.Context, leaderboard types.Leaderboar
 }
 
 // GetLeaderboard returns leaderboard
-func (k Keeper) GetLeaderboard(ctx context.Context) (val types.Leaderboard, found bool) {
+func (k Keeper) GetLeaderboard(ctx context.Context) (val types.Leaderboard) {
 	storeAdapter := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	store := prefix.NewStore(storeAdapter, types.KeyPrefix(types.LeaderboardKey))
 
 	b := store.Get([]byte{0})
 	if b == nil {
-		return val, false
+		panic("Leaderboard not found")
 	}
 
 	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	return val
 }
 
 // RemoveLeaderboard removes leaderboard from the store

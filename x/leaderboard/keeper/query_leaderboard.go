@@ -15,10 +15,7 @@ func (k Keeper) Leaderboard(goCtx context.Context, req *types.QueryGetLeaderboar
 	}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	val, found := k.GetLeaderboard(ctx)
-	if !found {
-		return nil, status.Error(codes.NotFound, "not found")
-	}
+	val := k.GetLeaderboard(ctx)
 
 	return &types.QueryGetLeaderboardResponse{Leaderboard: val}, nil
 }

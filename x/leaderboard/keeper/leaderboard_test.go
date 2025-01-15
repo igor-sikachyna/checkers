@@ -21,8 +21,7 @@ func createTestLeaderboard(keeper keeper.Keeper, ctx context.Context) types.Lead
 func TestLeaderboardGet(t *testing.T) {
 	keeper, ctx := keepertest.LeaderboardKeeper(t)
 	item := createTestLeaderboard(keeper, ctx)
-	rst, found := keeper.GetLeaderboard(ctx)
-	require.True(t, found)
+	rst := keeper.GetLeaderboard(ctx)
 	require.Equal(t,
 		nullify.Fill(&item),
 		nullify.Fill(&rst),
@@ -33,6 +32,10 @@ func TestLeaderboardRemove(t *testing.T) {
 	keeper, ctx := keepertest.LeaderboardKeeper(t)
 	createTestLeaderboard(keeper, ctx)
 	keeper.RemoveLeaderboard(ctx)
-	_, found := keeper.GetLeaderboard(ctx)
-	require.False(t, found)
+	defer func() {
+		r := recover()
+		require.NotNil(t, r, "The code did not panic")
+		require.Equal(t, r, "Leaderboard not found")
+	}()
+	keeper.GetLeaderboard(ctx)
 }
