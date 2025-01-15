@@ -54,8 +54,11 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	checkersmodulev1 "github.com/igor-sikachyna/checkers/api/checkers/checkers/module"
+	leaderboardmodulev1 "github.com/igor-sikachyna/checkers/api/checkers/leaderboard/module"
 	_ "github.com/igor-sikachyna/checkers/x/checkers/module" // import for side-effects
 	checkersmoduletypes "github.com/igor-sikachyna/checkers/x/checkers/types"
+	_ "github.com/igor-sikachyna/checkers/x/leaderboard/module" // import for side-effects
+	leaderboardmoduletypes "github.com/igor-sikachyna/checkers/x/leaderboard/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -94,6 +97,7 @@ var (
 		circuittypes.ModuleName,
 		// chain modules
 		checkersmoduletypes.ModuleName,
+		leaderboardmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 
@@ -119,6 +123,7 @@ var (
 		ibcfeetypes.ModuleName,
 		// chain modules
 		checkersmoduletypes.ModuleName,
+		leaderboardmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	}
 
@@ -138,6 +143,7 @@ var (
 		ibcfeetypes.ModuleName,
 		// chain modules
 		checkersmoduletypes.ModuleName,
+		leaderboardmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	}
 
@@ -297,6 +303,10 @@ var (
 			{
 				Name:   checkersmoduletypes.ModuleName,
 				Config: appconfig.WrapAny(&checkersmodulev1.Module{}),
+			},
+			{
+				Name:   leaderboardmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&leaderboardmodulev1.Module{}),
 			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},

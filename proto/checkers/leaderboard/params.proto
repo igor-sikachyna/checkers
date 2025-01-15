@@ -1,0 +1,16 @@
+syntax = "proto3";
+package checkers.leaderboard;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/igor-sikachyna/checkers/x/leaderboard/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "checkers/x/leaderboard/Params";
+  option (gogoproto.equal) = true;
+
+  
+  uint64 length = 1 [(gogoproto.moretags) = "yaml:\"length\""];
+}

@@ -82,6 +82,7 @@ import (
 	"github.com/igor-sikachyna/checkers/docs"
 
 	checkersmodulekeeper "github.com/igor-sikachyna/checkers/x/checkers/keeper"
+	leaderboardmodulekeeper "github.com/igor-sikachyna/checkers/x/leaderboard/keeper"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -145,7 +146,8 @@ type App struct {
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedKeepers             map[string]capabilitykeeper.ScopedKeeper
 
-	CheckersKeeper checkersmodulekeeper.Keeper
+	CheckersKeeper    checkersmodulekeeper.Keeper
+	LeaderboardKeeper leaderboardmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// simulation manager
@@ -251,6 +253,7 @@ func New(
 		&app.GroupKeeper,
 		&app.CircuitBreakerKeeper,
 		&app.CheckersKeeper,
+		&app.LeaderboardKeeper,
 		// this line is used by starport scaffolding # stargate/app/keeperDefinition
 	); err != nil {
 		panic(err)
